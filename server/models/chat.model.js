@@ -1,16 +1,18 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
-const chatSchema = new Schema({
-  prompt: {
-    type: String,
-    required: true,
+const chatSchema = new Schema(
+  {
+    prompt: {
+      type: String,
+      required: true,
+    },
+    answer: {
+      type: String,
+      required: true,
+    },
   },
-  answer: {
-    type: String,
-    required: true,
-  },
-  timestamp = true,
-});
+  { timestamps: true },
+);
 
 const Chat = model("Chat", chatSchema);
 

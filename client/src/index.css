@@ -1,0 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=Oi&display=swap");
+@import "tailwindcss";
+
+:root {
+  --color-bg: var(--color-mauve-100);
+  --color-border: var(--color-mauve-500);
+  --color-text-primary: var(--color-mauve-800);
+  --color-text-secondary: var(--color-mauve-700);
+}
+
+body {
+  font-family: "Comissioner", sans-serif;
+  color: var(--color-text-secondary);
+}
+
+.oi-regular {
+  font-family: "Oi", serif;
+}

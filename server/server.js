@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 import chatRouter from "./routes/chat.route.js";
 
@@ -33,4 +34,4 @@ database.once("connected", () => {
   });
 });
 
-// app.use(errorHandler);
+app.use(errorHandler);
