@@ -16,3 +16,27 @@ body {
 .oi-regular {
   font-family: "Oi", serif;
 }
+
+/* MARKDOWN */
+.markdown h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.markdown h3 {
+  font-weight: 700;
+}
+
+.markdown p {
+  margin-bottom: 1rem;
+}
+
+.markdown ul {
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.markdown hr {
+  margin: 1.5rem 0;
+}

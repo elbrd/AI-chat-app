@@ -14,11 +14,11 @@ mongoose.connect(process.env.CONNECTION_STRING);
 const database = mongoose.connection;
 
 // Middlewares
-// app.use(
-//   cors({
-//     origin: ["http://localhost:5173"],
-//   }),
-// );
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  }),
+);
 app.use(express.json());
 
 // Routes

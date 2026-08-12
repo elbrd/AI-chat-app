@@ -1,4 +1,11 @@
+import { useChatStore } from "../stores/useChatStore";
+import ReactMarkdown from "react-markdown";
+
 const AnswerContainer = () => {
+  const prompt = useChatStore((state) => state.prompt);
+  const answer = useChatStore((state) => state.answer);
+  const loading = useChatStore((state) => state.loading);
+
   return (
     <div
       className="
@@ -7,8 +14,9 @@ const AnswerContainer = () => {
         flex-1
       "
     >
-      <div
-        className="
+      {prompt && (
+        <div
+          className="
           p-4
           bg-mauve-500
           text-white
@@ -16,19 +24,22 @@ const AnswerContainer = () => {
           max-w-3/4
           place-self-end
         "
-      >
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      </div>
+        >
+          <p>{prompt}</p>
+        </div>
+      )}
 
-      <div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni, odit
-        reprehenderit tempore fugiat cum culpa in, reiciendis ad qui doloremque,
-        nam sequi expedita et cupiditate corrupti assumenda unde optio?
-        Obcaecati. Explicabo voluptas error, itaque pariatur illo officia harum
-        dolorem ex maiores. Harum eveniet, adipisci nihil repellat, voluptatum
-        quaerat doloribus id beatae deleniti omnis libero ea, saepe corrupti
-        blanditiis ducimus accusantium?
-      </div>
+      {loading && (
+        <div className="oi-regular text-(--color-text-primary) tracking-widest">
+          <p>....</p>
+        </div>
+      )}
+
+      {answer && (
+        <div className="markdown max-w-3xl leading-7">
+          <ReactMarkdown>{answer}</ReactMarkdown>
+        </div>
+      )}
     </div>
   );
 };

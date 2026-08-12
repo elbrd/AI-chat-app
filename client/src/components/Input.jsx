@@ -1,4 +1,4 @@
-const Input = () => {
+const Input = ({ onChange, value }) => {
   return (
     <input
       type="text"
@@ -11,6 +11,8 @@ const Input = () => {
         rounded-xl
         flex-1
       "
+      onChange={onChange}
+      value={value}
     />
   );
 };
