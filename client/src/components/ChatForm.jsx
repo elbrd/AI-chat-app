@@ -17,13 +17,7 @@ const ChatForm = () => {
   };
 
   return (
-    <form
-      className="
-      min-w-full
-      flex flex-row gap-4
-      items-center
-    "
-    >
+    <form className="flex flex-row gap-4 items-center">
       <Input
         value={prompt}
         onChange={(e) => {

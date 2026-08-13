@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 const AnswerContainer = () => {
   const prompt = useChatStore((state) => state.prompt);
   const answer = useChatStore((state) => state.answer);
+  const error = useChatStore((state) => state.error);
   const loading = useChatStore((state) => state.loading);
 
   return (
@@ -38,6 +39,12 @@ const AnswerContainer = () => {
       {answer && (
         <div className="markdown max-w-3xl leading-7">
           <ReactMarkdown>{answer}</ReactMarkdown>
+        </div>
+      )}
+
+      {error && (
+        <div className="max-w-3xl leading-7">
+          <p>{error}</p>
         </div>
       )}
     </div>

@@ -5,11 +5,16 @@ const StartPage = () => {
   return (
     <div
       className="
-        flex flex-col gap-4 min-h-[80vh] min-w-full
+        flex flex-col gap-4 
+        min-h-[80vh] min-w-full
+
       "
     >
       <AnswerContainer />
-      <ChatForm />
+
+      <div className="sticky bottom-4">
+        <ChatForm />
+      </div>
     </div>
   );
 };

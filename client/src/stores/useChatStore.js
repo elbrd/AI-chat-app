@@ -4,9 +4,9 @@ import { API_URL } from "../utils/api";
 
 export const useChatStore = create((set) => ({
   prompt: null,
-
   answer: null,
 
+  error: null,
   loading: null,
 
   sendPrompt: async (prompt) => {
@@ -17,11 +17,12 @@ export const useChatStore = create((set) => ({
         prompt,
       });
 
-      set({ answer: response.data.answer, loading: false });
+      set({ answer: response.data.answer, error: false, loading: false });
     } catch (error) {
       console.log(error.response?.data?.message || error.message);
       set({
-        answer: error.response?.data?.message || error.message,
+        answer: null,
+        error: error.response?.data?.message || error.message,
         loading: false,
       });
     }
