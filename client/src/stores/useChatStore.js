@@ -13,7 +13,7 @@ export const useChatStore = create((set) => ({
     try {
       set({ prompt, answer: null, loading: true });
 
-      const response = await axios.post(`${API_URL}/chat`, {
+      const response = await axios.post(`${API_URL}/api/chat`, {
         prompt,
       });
 
