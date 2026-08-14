@@ -1,4 +1,4 @@
-# AI-Chat
+# AI-chat-app
 
 En avskalad AI-chattapplikation utvecklad med React, Vite och Node.js. Applikationen använder Groq API för AI-genererade svar och har stöd för webbsökning genom Groqs Compound Mini, vilket gör det möjligt att hämta aktuell information och presentera relevanta källor tillsammans med svaret.
 
