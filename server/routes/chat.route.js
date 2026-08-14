@@ -11,24 +11,37 @@ router.post("/", async (req, res, next) => {
   if (!prompt)
     return next({
       status: 400,
-      message: "No request body provided",
+      message: "Din fråga var tom",
     });
 
   const answer = await main(prompt);
 
-  if (answer.length < 1)
+  if (!answer.success) {
+    if (answer.error.status === 413) {
+      return next({
+        status: 413,
+        message:
+          "AI-sökningen blev för omfattande. Försök med en mer specifik fråga.",
+      });
+    }
     return next({
-      message: "No answer was provided",
-    });
-
-  const result = await saveChat(prompt, answer);
-
-  if (result.success) {
-    res.status(201).json({
-      success: true,
-      answer,
+      message: "Kunde inte hämta svar från AI:n",
     });
   }
+
+  const result = await saveChat(prompt, answer.content);
+
+  if (!result.success) {
+    return next({
+      message: result.message,
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    answer: answer.content,
+    sources: answer.sources,
+  });
 });
 
 export default router;

@@ -6,9 +6,33 @@ dotenv.config();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function main(prompt) {
-  const chatCompletion = await getGroqChatCompletion(prompt);
-  // Print the completion returned by the LLM.
-  return chatCompletion.choices[0]?.message?.content || "";
+  try {
+    const chatCompletion = await getGroqChatCompletion(prompt);
+    // Print the completion returned by the LLM.
+    const tools = chatCompletion.choices[0]?.message?.executed_tools;
+    const searchResults = tools?.[0]?.search_results?.results;
+
+    let sources;
+    if (searchResults) {
+      sources = [...searchResults]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 2)
+        .map((result) => ({
+          title: result.title,
+          url: result.url,
+          score: result.score,
+        }));
+    }
+
+    const content = chatCompletion.choices[0]?.message?.content || "";
+
+    return { success: true, content, sources };
+  } catch (error) {
+    return {
+      success: false,
+      error,
+    };
+  }
 }
 
 export async function getGroqChatCompletion(prompt) {
@@ -29,6 +53,6 @@ export async function getGroqChatCompletion(prompt) {
         content: prompt,
       },
     ],
-    model: "openai/gpt-oss-120b",
+    model: "groq/compound-mini",
   });
 }

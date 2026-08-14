@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 const AnswerContainer = () => {
   const prompt = useChatStore((state) => state.prompt);
   const answer = useChatStore((state) => state.answer);
+  const sources = useChatStore((state) => state.sources);
+
   const error = useChatStore((state) => state.error);
   const loading = useChatStore((state) => state.loading);
 
@@ -39,6 +41,28 @@ const AnswerContainer = () => {
       {answer && (
         <div className="markdown max-w-3xl leading-7">
           <ReactMarkdown>{answer}</ReactMarkdown>
+        </div>
+      )}
+
+      {sources && (
+        <div className="markdown max-w-3xl leading-7">
+          <h3>Källor</h3>
+          <ul>
+            {sources.map((src) => {
+              return (
+                <li key={src.title}>
+                  <a
+                    className="underline"
+                    href={src.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {src.title}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       )}
 
