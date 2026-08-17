@@ -1,10 +1,92 @@
 import { Router } from "express";
 import { main } from "../utils/groq.js";
-import { saveChat } from "../services/chat.service.js";
+import {
+  createChatsession,
+  getChatsession,
+  saveChat,
+} from "../services/chat.service.js";
 
 const router = Router();
 
 // POST send prompt
+router.post("/", async (req, res, next) => {
+  const { prompt } = req.body;
+  const sessionId = req.headers["authorization"]?.split(" ")[1];
+
+  // Om finns historik/kontext från redan befintlig chatsession skicka med i anrop
+  // Annars skicka bara med prompt och skapa ny chatsession efteråt
+  let answer;
+  let chatsession;
+  const findChatsession = await getChatsession(sessionId);
+  if (findChatsession.success) {
+    chatsession = findChatsession.chatsession;
+    const context = chatsession.messages.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
+    answer = await main(prompt, context);
+  } else {
+    answer = await main(prompt);
+  }
+
+  if (!answer.success) {
+    if (answer.error.status === 413) {
+      return next({
+        status: 413,
+        message:
+          "AI-sökningen blev för omfattande. Försök med en mer specifik fråga.",
+      });
+    }
+    return next({
+      message: "Kunde inte hämta svar från AI:n",
+    });
+  }
+
+  // Vid lyckat AI-svar spara i hämtad chatsession om finns
+  // Annars skapa ny chatsession och spara där
+  if (findChatsession.success) {
+    chatsession.messages.push(
+      {
+        role: "user",
+        content: prompt,
+      },
+      {
+        role: "assistant",
+        content: answer.content,
+      },
+    );
+    await chatsession.save();
+  } else {
+    const newChatsession = await createChatsession({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+        {
+          role: "assistant",
+          content: answer.content,
+        },
+      ],
+    });
+
+    if (!newChatsession.success) {
+      return next({
+        message: newChatsession.message,
+      });
+    }
+  }
+
+  // Skicka AI-svar till frontend
+  res.status(201).json({
+    success: true,
+    answer: answer.content,
+    sources: answer.sources,
+  });
+});
+
+// POST send prompt
+/*
 router.post("/", async (req, res, next) => {
   const { prompt } = req.body;
 
@@ -43,5 +125,6 @@ router.post("/", async (req, res, next) => {
     sources: answer.sources,
   });
 });
+*/
 
 export default router;

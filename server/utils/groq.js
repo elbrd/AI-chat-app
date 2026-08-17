@@ -5,9 +5,9 @@ dotenv.config();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export async function main(prompt) {
+export async function main(prompt, context) {
   try {
-    const chatCompletion = await getGroqChatCompletion(prompt);
+    const chatCompletion = await getGroqChatCompletion(prompt, context);
     // Print the completion returned by the LLM.
     const tools = chatCompletion.choices[0]?.message?.executed_tools;
     const searchResults = tools?.[0]?.search_results?.results;
@@ -35,24 +35,40 @@ export async function main(prompt) {
   }
 }
 
-export async function getGroqChatCompletion(prompt) {
-  return groq.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: `
-          Use Markdown for formatting when appropriate.
+export async function getGroqChatCompletion(prompt, context) {
+  const systemMessage = {
+    role: "system",
+    content: `
+            Use Markdown for formatting when appropriate.
+  
+            Under no circumstances use Markdown tables.
+            When comparing multiple items, use bullet points instead of a table.
+            Prefer short paragraphs and bullet lists.
+          `,
+  };
 
-          Under no circumstances use Markdown tables.
-          When comparing multiple items, use bullet points instead of a table.
-          Prefer short paragraphs and bullet lists.
-        `,
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    model: "groq/compound-mini",
-  });
+  if (context) {
+    return groq.chat.completions.create({
+      messages: [
+        systemMessage,
+        ...context,
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      model: "groq/compound-mini",
+    });
+  } else {
+    return groq.chat.completions.create({
+      messages: [
+        systemMessage,
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      model: "groq/compound-mini",
+    });
+  }
 }
