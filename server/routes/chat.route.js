@@ -8,6 +8,23 @@ import {
 
 const router = Router();
 
+// GET chatsession
+router.get("/", async (req, res, next) => {
+  const sessionId = req.headers["authorization"]?.split(" ")[1];
+
+  const result = await getChatsession(sessionId);
+  if (!result.success) {
+    return next({
+      message: result.message,
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    chatsession: result.chatsession,
+  });
+});
+
 // POST send prompt
 router.post("/", async (req, res, next) => {
   const { prompt } = req.body;
@@ -20,10 +37,12 @@ router.post("/", async (req, res, next) => {
   const findChatsession = await getChatsession(sessionId);
   if (findChatsession.success) {
     chatsession = findChatsession.chatsession;
+
     const context = chatsession.messages.map((message) => ({
       role: message.role,
       content: message.content,
     }));
+
     answer = await main(prompt, context);
   } else {
     answer = await main(prompt);
@@ -56,8 +75,11 @@ router.post("/", async (req, res, next) => {
       },
     );
     await chatsession.save();
-  } else {
-    const newChatsession = await createChatsession({
+  }
+
+  let newChatsession;
+  if (!findChatsession.success) {
+    newChatsession = await createChatsession({
       messages: [
         {
           role: "user",
@@ -82,6 +104,7 @@ router.post("/", async (req, res, next) => {
     success: true,
     answer: answer.content,
     sources: answer.sources,
+    sessionId: newChatsession?.chatsession._id || null,
   });
 });
 

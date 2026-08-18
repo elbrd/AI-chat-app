@@ -21,7 +21,6 @@ export const saveChat = async (prompt, answer) => {
 // Create chatsession
 export const createChatsession = async (messages) => {
   try {
-    console.log(messages);
     const result = await Chatsession.create(messages);
 
     return {

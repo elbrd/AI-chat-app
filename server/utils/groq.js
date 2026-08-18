@@ -28,6 +28,10 @@ export async function main(prompt, context) {
 
     return { success: true, content, sources };
   } catch (error) {
+    console.log("GROQ ERROR:");
+    console.log(error);
+    console.log("STATUS:", error.status);
+    console.log("MESSAGE:", error.message);
     return {
       success: false,
       error,
@@ -57,7 +61,12 @@ export async function getGroqChatCompletion(prompt, context) {
           content: prompt,
         },
       ],
-      model: "groq/compound-mini",
+      model: "openai/gpt-oss-20b",
+      tools: [
+        {
+          type: "browser_search",
+        },
+      ],
     });
   } else {
     return groq.chat.completions.create({
@@ -68,7 +77,12 @@ export async function getGroqChatCompletion(prompt, context) {
           content: prompt,
         },
       ],
-      model: "groq/compound-mini",
+      model: "openai/gpt-oss-20b",
+      tools: [
+        {
+          type: "browser_search",
+        },
+      ],
     });
   }
 }

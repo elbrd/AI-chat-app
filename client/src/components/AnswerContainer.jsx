@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useChatStore } from "../stores/useChatStore";
 import ReactMarkdown from "react-markdown";
 
@@ -5,6 +6,11 @@ const AnswerContainer = () => {
   const prompt = useChatStore((state) => state.prompt);
   const answer = useChatStore((state) => state.answer);
   const sources = useChatStore((state) => state.sources);
+
+  const chatsession = useChatStore((state) => state.chatsession);
+  useEffect(() => {
+    console.log(chatsession);
+  }, [chatsession]);
 
   const error = useChatStore((state) => state.error);
   const loading = useChatStore((state) => state.loading);
@@ -17,16 +23,42 @@ const AnswerContainer = () => {
         flex-1
       "
     >
+      {chatsession &&
+        chatsession.map((chat) => {
+          if (chat.role === "user") {
+            return (
+              <div
+                className="
+                p-4
+                bg-mauve-500
+                text-white
+                rounded-xl
+                max-w-3/4
+                place-self-end
+              "
+              >
+                <p>{chat.content}</p>
+              </div>
+            );
+          } else {
+            return (
+              <div className="markdown max-w-3xl leading-7 mb-4">
+                <ReactMarkdown>{chat.content}</ReactMarkdown>
+              </div>
+            );
+          }
+        })}
+
       {prompt && (
         <div
           className="
-          p-4
-          bg-mauve-500
-          text-white
-          rounded-xl
-          max-w-3/4
-          place-self-end
-        "
+            p-4
+            bg-mauve-500
+            text-white
+            rounded-xl
+            max-w-3/4
+            place-self-end
+          "
         >
           <p>{prompt}</p>
         </div>
@@ -39,7 +71,7 @@ const AnswerContainer = () => {
       )}
 
       {answer && (
-        <div className="markdown max-w-3xl leading-7">
+        <div className="markdown max-w-3xl leading-7 mb-4">
           <ReactMarkdown>{answer}</ReactMarkdown>
         </div>
       )}
