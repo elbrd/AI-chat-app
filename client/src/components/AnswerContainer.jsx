@@ -1,16 +1,10 @@
-import { useEffect } from "react";
 import { useChatStore } from "../stores/useChatStore";
 import ReactMarkdown from "react-markdown";
 
 const AnswerContainer = () => {
   const prompt = useChatStore((state) => state.prompt);
-  const answer = useChatStore((state) => state.answer);
-  const sources = useChatStore((state) => state.sources);
 
   const chatsession = useChatStore((state) => state.chatsession);
-  useEffect(() => {
-    console.log(chatsession);
-  }, [chatsession]);
 
   const error = useChatStore((state) => state.error);
   const loading = useChatStore((state) => state.loading);
@@ -24,10 +18,11 @@ const AnswerContainer = () => {
       "
     >
       {chatsession &&
-        chatsession.map((chat) => {
+        chatsession.map((chat, index) => {
           if (chat.role === "user") {
             return (
               <div
+                key={`${chat.role}-${index}`}
                 className="
                 p-4
                 bg-mauve-500
@@ -42,7 +37,10 @@ const AnswerContainer = () => {
             );
           } else {
             return (
-              <div className="markdown max-w-3xl leading-7 mb-4">
+              <div
+                key={`${chat.role}-${index}`}
+                className="markdown max-w-3xl leading-7 mb-4"
+              >
                 <ReactMarkdown>{chat.content}</ReactMarkdown>
               </div>
             );
@@ -67,34 +65,6 @@ const AnswerContainer = () => {
       {loading && (
         <div className="oi-regular text-(--color-text-primary) tracking-widest">
           <p>....</p>
-        </div>
-      )}
-
-      {answer && (
-        <div className="markdown max-w-3xl leading-7 mb-4">
-          <ReactMarkdown>{answer}</ReactMarkdown>
-        </div>
-      )}
-
-      {sources && (
-        <div className="markdown max-w-3xl leading-7">
-          <h3>Källor</h3>
-          <ul>
-            {sources.map((src) => {
-              return (
-                <li key={src.title}>
-                  <a
-                    className="underline"
-                    href={src.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {src.title}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
         </div>
       )}
 

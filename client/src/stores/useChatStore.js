@@ -4,8 +4,6 @@ import { API_URL } from "../utils/api";
 
 export const useChatStore = create((set, get) => ({
   prompt: null,
-  answer: null,
-  sources: null,
 
   sessionId: sessionStorage.getItem("sessionId") || null,
   setSessionId: (sessionId) => {
@@ -21,7 +19,6 @@ export const useChatStore = create((set, get) => ({
   chatsession: null,
   fetchChatsession: async () => {
     const sessionId = get().sessionId;
-    console.log(sessionId);
     if (!sessionId) {
       set({ chatsession: null });
       return;
@@ -41,17 +38,15 @@ export const useChatStore = create((set, get) => ({
     set({
       chatsession: response.data.chatsession.messages,
       prompt: null,
-      answer: null,
-      sources: null,
     });
   },
 
   error: null,
-  loading: null,
+  loading: false,
 
   sendPrompt: async (prompt) => {
     try {
-      set({ prompt, answer: null, sources: null, error: false, loading: true });
+      set({ prompt, error: null, loading: true });
 
       const sessionId = get().sessionId;
       const config = sessionId
@@ -72,17 +67,15 @@ export const useChatStore = create((set, get) => ({
 
       get().setSessionId(response.data.sessionId || null);
       set({
-        answer: response.data.answer,
-        sources: response.data.sources || null,
+        chatsession: response.data.chatsession,
 
-        error: false,
+        prompt: null,
+
+        error: null,
         loading: false,
       });
     } catch (error) {
       set({
-        answer: null,
-        sources: null,
-
         error: error.response?.data?.message || error.message,
         loading: false,
       });

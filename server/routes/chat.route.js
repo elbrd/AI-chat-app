@@ -1,10 +1,6 @@
 import { Router } from "express";
 import { main } from "../utils/groq.js";
-import {
-  createChatsession,
-  getChatsession,
-  saveChat,
-} from "../services/chat.service.js";
+import { createChatsession, getChatsession } from "../services/chat.service.js";
 
 const router = Router();
 
@@ -55,6 +51,12 @@ router.post("/", async (req, res, next) => {
         message:
           "AI-sökningen blev för omfattande. Försök med en mer specifik fråga.",
       });
+    } else if (answer.error.status === 429) {
+      return next({
+        status: 429,
+        message:
+          "För många förfrågningar just nu. Vänta en stund och försök igen.",
+      });
     }
     return next({
       message: "Kunde inte hämta svar från AI:n",
@@ -71,7 +73,7 @@ router.post("/", async (req, res, next) => {
       },
       {
         role: "assistant",
-        content: answer.content,
+        content: answer.cleanContent,
       },
     );
     await chatsession.save();
@@ -87,7 +89,7 @@ router.post("/", async (req, res, next) => {
         },
         {
           role: "assistant",
-          content: answer.content,
+          content: answer.cleanContent,
         },
       ],
     });
@@ -102,52 +104,10 @@ router.post("/", async (req, res, next) => {
   // Skicka AI-svar till frontend
   res.status(201).json({
     success: true,
-    answer: answer.content,
-    sources: answer.sources,
-    sessionId: newChatsession?.chatsession._id || null,
+    answer: answer.cleanContent,
+    sessionId: sessionId || newChatsession?.chatsession._id,
+    chatsession: chatsession?.messages || newChatsession?.chatsession.messages,
   });
 });
-
-// POST send prompt
-/*
-router.post("/", async (req, res, next) => {
-  const { prompt } = req.body;
-
-  if (!prompt)
-    return next({
-      status: 400,
-      message: "Din fråga var tom",
-    });
-
-  const answer = await main(prompt);
-
-  if (!answer.success) {
-    if (answer.error.status === 413) {
-      return next({
-        status: 413,
-        message:
-          "AI-sökningen blev för omfattande. Försök med en mer specifik fråga.",
-      });
-    }
-    return next({
-      message: "Kunde inte hämta svar från AI:n",
-    });
-  }
-
-  const result = await saveChat(prompt, answer.content);
-
-  if (!result.success) {
-    return next({
-      message: result.message,
-    });
-  }
-
-  res.status(201).json({
-    success: true,
-    answer: answer.content,
-    sources: answer.sources,
-  });
-});
-*/
 
 export default router;

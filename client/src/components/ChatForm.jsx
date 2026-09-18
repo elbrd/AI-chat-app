@@ -17,14 +17,14 @@ const ChatForm = () => {
   };
 
   return (
-    <form className="flex flex-row gap-4 items-center">
+    <form onSubmit={handleSubmit} className="flex flex-row gap-4 items-center">
       <Input
         value={prompt}
         onChange={(e) => {
           setPrompt(e.target.value);
         }}
       />
-      <Button onClick={handleSubmit} disabled={!prompt ? true : false} />
+      <Button type="submit" disabled={!prompt ? true : false} />
     </form>
   );
 };

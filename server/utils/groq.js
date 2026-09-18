@@ -9,6 +9,9 @@ export async function main(prompt, context) {
   try {
     const chatCompletion = await getGroqChatCompletion(prompt, context);
     // Print the completion returned by the LLM.
+
+    // Källor sparas i nuläget inte i DB och används inte av client
+    /*
     const tools = chatCompletion.choices[0]?.message?.executed_tools;
     const searchResults = tools?.[0]?.search_results?.results;
 
@@ -23,15 +26,13 @@ export async function main(prompt, context) {
           score: result.score,
         }));
     }
+    */
 
     const content = chatCompletion.choices[0]?.message?.content || "";
+    const cleanContent = content.replace(/【\d+†L\d+-L\d+】/g, "");
 
-    return { success: true, content, sources };
+    return { success: true, cleanContent };
   } catch (error) {
-    console.log("GROQ ERROR:");
-    console.log(error);
-    console.log("STATUS:", error.status);
-    console.log("MESSAGE:", error.message);
     return {
       success: false,
       error,

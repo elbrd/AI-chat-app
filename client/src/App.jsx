@@ -4,12 +4,10 @@ import StartPage from "./pages/StartPage";
 import { useChatStore } from "./stores/useChatStore";
 
 function App() {
-  const sessionId = useChatStore((state) => state.sessionId);
-  const answer = useChatStore((state) => state.answer);
   const fetchChatsession = useChatStore((state) => state.fetchChatsession);
   useEffect(() => {
     fetchChatsession();
-  }, [fetchChatsession, sessionId, answer]);
+  }, [fetchChatsession]);
 
   return (
     <div
