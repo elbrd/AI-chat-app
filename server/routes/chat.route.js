@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { main } from "../utils/groq.js";
+import { getLLMResponse } from "../utils/llm.js";
 import { createChatsession, getChatsession } from "../services/chat.service.js";
 
 const router = Router();
@@ -39,9 +39,9 @@ router.post("/", async (req, res, next) => {
       content: message.content,
     }));
 
-    answer = await main(prompt, context);
+    answer = await getLLMResponse(prompt, context);
   } else {
-    answer = await main(prompt);
+    answer = await getLLMResponse(prompt);
   }
 
   if (!answer.success) {
